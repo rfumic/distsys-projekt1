@@ -4,9 +4,11 @@ from aiohttp import web
 routes = web.RouteTableDef()
 
 
-@routes.get("/wt")
+@routes.post("/wt")
 async def wt(request):
     try:
+        req = await request.json()
+        print(req)
         return web.json_response(
             {
                 "status": "ok",

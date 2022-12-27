@@ -15,6 +15,7 @@ def cleanData(obj):
         obj["repo_name"].split("/")[0],
         "https://github.com/" + obj["repo_name"],
         obj["path"].split("/")[-1],
+        obj['content']
     )
     return record
 
@@ -23,11 +24,11 @@ async def loadDb():
     async with aiofiles.open("podaci.json", mode="r") as f:
         i = 0
         async for line in f:
-            print(f"file {i}")
+            print(f"file {i}",end='\r')
 
             async with aiosqlite.connect(DATABASE) as db:
                 await db.execute(
-                    "INSERT INTO Zadace (username,ghlink,filename) VALUES (?,?,?)",
+                    "INSERT INTO Zadace (username,ghlink,filename,content) VALUES (?,?,?,?)",
                     cleanData(json.loads(line)),
                 )
                 await db.commit()
@@ -48,11 +49,26 @@ async def startDb():
 
 @routes.get("/m0")
 async def m0(request):
-    #    req = await request.json()
     try:
-        return web.json_response({"status": "ok"}, status=200)
+        offset = request.query['offset'] 
+        response = {
+            "service_id": 0,
+            "data": {"usernames": [], "githubLinks": [], "filenames": [],
+            'content':[]},
+        }
+        async with aiosqlite.connect(DATABASE) as db:
+            async with db.execute(f"SELECT * FROM Zadace LIMIT 100 OFFSET {offset}") as cur:
+                async for row in cur:
+                    response["data"]["usernames"].append(row[1])
+                    response["data"]["githubLinks"].append(row[2])
+                    response["data"]["filenames"].append(row[3])
+                    response['data']['content'].append(row[4])
+                await db.commit()
+        
+        return web.json_response(response, status=200)
     except Exception as e:
-        return web.json_response({"status": "failed", "message": str(e)})
+        return web.json_response({"status": "failed", "message":
+        str(e)},status=500)
 
 
 asyncio.run(startDb())
