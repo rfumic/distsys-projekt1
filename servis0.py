@@ -10,7 +10,7 @@ global DATABASE
 DATABASE = "db/distsys-projekt1.db"
 
 
-def cleanData(obj):
+def clean_data(obj):
     record = (
         obj["repo_name"].split("/")[0],
         "https://github.com/" + obj["repo_name"],
@@ -20,7 +20,7 @@ def cleanData(obj):
     return record
 
 
-async def loadDb():
+async def load_db():
     async with aiofiles.open("podaci.json", mode="r") as f:
         i = 0
         async for line in f:
@@ -29,7 +29,7 @@ async def loadDb():
             async with aiosqlite.connect(DATABASE) as db:
                 await db.execute(
                     "INSERT INTO Zadace (username,ghlink,filename,content) VALUES (?,?,?,?)",
-                    cleanData(json.loads(line)),
+                    clean_data(json.loads(line)),
                 )
                 await db.commit()
             i += 1
@@ -37,14 +37,14 @@ async def loadDb():
                 return
 
 
-async def startDb():
+async def start_db():
     async with aiosqlite.connect(DATABASE) as db:
         cur = await db.cursor()
         await cur.execute("SELECT COUNT(*) FROM Zadace")
         count = await cur.fetchall()
 
         if count[0][0] == 0:
-            await loadDb()
+            await load_db()
 
 
 @routes.get("/m0")
@@ -76,7 +76,7 @@ async def m0(request):
         return web.json_response({"status": "failed", "message": str(e)}, status=500)
 
 
-asyncio.run(startDb())
+asyncio.run(start_db())
 
 app = web.Application()
 app.router.add_routes(routes)

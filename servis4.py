@@ -4,9 +4,11 @@ from aiohttp import web
 routes = web.RouteTableDef()
 
 
-@routes.get("/gatherData")
+@routes.post("/gatherData")
 async def gather_data(request):
     try:
+        req = await request.json()
+        print(req.keys())
         return web.json_response(
             {
                 "status": "ok",
