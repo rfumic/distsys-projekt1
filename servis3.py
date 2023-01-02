@@ -5,14 +5,17 @@ routes = web.RouteTableDef()
 
 
 def extract_data(dic):
-    result = {"usernames": [], "githubLinks": [], "filenames": [], "content": []}
+    result = []
     for i, v in enumerate(dic["usernames"]):
         if v[0].lower() == "w":
-            print(v)
-            result["usernames"].append(v)
-            result["githubLinks"].append(dic["githubLinks"][i])
-            result["filenames"].append(dic["filenames"][i])
-            result["content"].append(dic["content"][i])
+            result.append(
+                {
+                    "username": v,
+                    "githubLink": dic["githubLinks"][i],
+                    "filename": dic["filenames"][i],
+                    "content": dic["content"][i],
+                }
+            )
 
     return result
 
@@ -26,7 +29,7 @@ async def wt(request):
                 "http://0.0.0.0:8084/gatherData", json=extract_data(req["data"])
             )
         return web.json_response(
-            {"service_id": 2, "response": r},
+            {"service_id": 3, "response": r},
             status=200,
         )
     except Exception as e:

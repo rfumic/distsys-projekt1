@@ -5,14 +5,17 @@ routes = web.RouteTableDef()
 
 
 def extract_data(dic):
-    result = {"usernames": [], "githubLinks": [], "filenames": [], "content": []}
+    result = []
     for i, v in enumerate(dic["usernames"]):
         if v[0].lower() == "d":
-            print(v)
-            result["usernames"].append(v)
-            result["githubLinks"].append(dic["githubLinks"][i])
-            result["filenames"].append(dic["filenames"][i])
-            result["content"].append(dic["content"][i])
+            result.append(
+                {
+                    "username": v,
+                    "githubLink": dic["githubLinks"][i],
+                    "filename": dic["filenames"][i],
+                    "content": dic["content"][i],
+                }
+            )
 
     return result
 

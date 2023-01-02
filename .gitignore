@@ -136,3 +136,4 @@ dmypy.json
 podaci.json
 *.swp
 db/
+output/
