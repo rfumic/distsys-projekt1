@@ -8,6 +8,7 @@ def extract_data(dic):
     result = []
     for i, v in enumerate(dic["usernames"]):
         if v[0].lower() == "d":
+            print(v)
             result.append(
                 {
                     "username": v,

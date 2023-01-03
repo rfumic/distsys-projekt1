@@ -9,10 +9,10 @@ gathered_files = []
 
 
 async def generate_files():
-    for x in gathered_files:
-        async with aiofiles.open(f"./output/{x['filename']}", mode="a") as f:
-            print(f"Generating {x['filename']}...")
-            await f.write(x["content"])
+    print("Generating files...")
+    for file in gathered_files:
+        async with aiofiles.open(f"./output/{file['filename']}", mode="a") as f:
+            await f.write(file["content"])
 
 
 @routes.post("/gatherData")
