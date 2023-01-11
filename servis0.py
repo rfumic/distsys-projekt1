@@ -24,7 +24,7 @@ async def load_db():
     async with aiofiles.open("podaci.json", mode="r") as f:
         i = 0
         async for line in f:
-            print(f"file {i}", end="\r")
+            # print(f"file {i}", end="\r")
 
             async with aiosqlite.connect(DATABASE) as db:
                 await db.execute(
@@ -40,6 +40,9 @@ async def load_db():
 async def start_db():
     async with aiosqlite.connect(DATABASE) as db:
         cur = await db.cursor()
+        await cur.execute(
+            "CREATE TABLE IF NOT EXISTS 'Zadace' ('ID' INTEGER NOT NULL, 'username' TEXT NOT NULL, 'ghlink' TEXT NOT NULL, 'filename' TEXT NOT NULL, 'content' TEXT NOT NULL, PRIMARY KEY ('ID' AUTOINCREMENT))"
+        )
         await cur.execute("SELECT COUNT(*) FROM Zadace")
         count = await cur.fetchall()
 
